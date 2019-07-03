@@ -11,6 +11,18 @@ import '../src/assets/base.css'
 Vue.config.productionTip = false
 // 安装elementUI
 Vue.use(ElementUI)
+// 引入导航守卫
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    next()
+    return
+  }
+  if (localStorage.getItem('token')) {
+    next()
+  } else {
+    router.push('/Login')
+  }
+})
 
 new Vue({
   router,

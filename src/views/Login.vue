@@ -34,8 +34,8 @@ export default {
   data() {
     return {
       form: {
-        username: "admin",
-        password: "123456"
+        username: "",
+        password: ""
       },
       formRules: {
         username: [
@@ -78,8 +78,11 @@ export default {
             method: "post",
             data: this.form
             // 以下使用了嵌套解构
-          }).then(({ data: { meta, data } }) => {
+          }).then(({ data: { data, meta } }) => {
             if (meta.status == 200) {
+              // 登录成功后，服务器会给我们返回一个数据token
+              // 我们需要将这个token保存在本地localstorage中即可
+              localStorage.setItem("token", data.token);
               this.$router.push("/home");
             }
           });
