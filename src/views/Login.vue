@@ -1,7 +1,7 @@
 <template>
   <el-row type="flex" class="row-bg" justify="center" align="middle">
     <el-col :span="8">
-      <el-form ref="form" :model="form" label-width="80px" class="loginform" label-position=>
+      <el-form ref="form" :model="form" label-width="80px" class="loginform" label-position="top">
         <el-form-item label="用户名">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
