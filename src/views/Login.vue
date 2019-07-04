@@ -4,11 +4,6 @@
   <!-- span：栅格占据的列数 -->
   <!-- justify：设置水平对齐的方式 -->
   <el-row type="flex" class="row-bg" justify="center" align="middle">
-<<<<<<< HEAD
-    <el-col :span="8">
-      <el-form ref="form" :model="form" label-width="80px" class="loginform" label-position="top">
-        <el-form-item label="用户名">
-=======
     <el-col :xs="14" :sm="12" :md="10" :lg="8" :xl="6">
       <el-form
         ref="loginform"
@@ -19,7 +14,6 @@
         label-width="80px"
       >
         <el-form-item label="用户名" prop="username">
->>>>>>> login
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
