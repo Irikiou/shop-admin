@@ -22,6 +22,10 @@ export default new Router({
           component: User
         }
       ]
+    },
+    {
+      path: '/',
+      redirect: '/home'
     }
   ]
 })

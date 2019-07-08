@@ -20,7 +20,7 @@ router.beforeEach((to, from, next) => {
   if (localStorage.getItem('token')) {
     next()
   } else {
-    router.push('/Login')
+    router.push('/login')
   }
 })
 
