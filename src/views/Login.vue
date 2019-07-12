@@ -17,7 +17,7 @@
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password"></el-input>
+          <el-input type="password" show-password v-model="form.password"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('loginform')">登录</el-button>
@@ -28,8 +28,6 @@
   </el-row>
 </template>
 <script>
-// 引入axios文件，在哪里使用就在哪里引入
-import axios from "axios";
 export default {
   data() {
     return {
@@ -72,8 +70,8 @@ export default {
       let valid = await this.$refs[formName].validate();
       if (valid) {
         try {
-          let res = await axios({
-            url: "http://localhost:8888/api/private/v1/login",
+          let res = await this.$http({
+            url: "login",
             method: "post",
             data: this.form
           });
@@ -99,36 +97,7 @@ export default {
       this.$refs[formName].resetFields();
     }
   }
-  // methods: {
-  //   submitForm(formName) {
-  //     // this.$refs[formName]获取到了表单对象，通过调用这个对象的validate方法，就能对表单整体校验，validate接收的是一个函数
-  //     this.$refs[formName].validate(valid => {
-  //       //   validate形参接收到的就是表单的校验结果
-  //       // 如果成功是true，发送ajax请求;失败是false,return
-  //       if (valid) {
-  //         axios({
-  //           url: "http://localhost:8888/api/private/v1/login",
-  //           method: "post",
-  //           data: this.form
-  //           // 以下使用了嵌套解构
-  //         }).then(({ data: { data, meta } }) => {
-  //           if (meta.status == 200) {
-  //             // 登录成功后，服务器会给我们返回一个数据token
-  //             // 我们需要将这个token保存在本地localstorage中即可
-  //             localStorage.setItem("token", data.token);
-  //             this.$router.push("/home");
-  //           }
-  //         });
-  //       } else {
-  //         console.log("error submit!!");
-  //         return false;
-  //       }
-  //     });
-  //   },
-  //   resetForm(formName) {
-  //     this.$refs[formName].resetFields();
-  //   }
-  // }
+ 
 };
 </script>
 <style>
