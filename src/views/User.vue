@@ -258,8 +258,8 @@ export default {
     },
     // 搜索框
     search() {
-      // 不论在那一夜搜索，都让页面返回第一页
-      this.currentpage = 1
+      // 不论在哪一页搜索，都能返回第一页
+      this.currentpage = 1;
       this.getUserList();
     },
     handle(scope) {
