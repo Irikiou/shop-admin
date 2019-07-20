@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from './views/Login.vue'
-import Home from './views/Home.vue'
-import User from './views/User.vue'
+import Login from './views/Login/Login.vue'
+import Home from './views/Home/Home.vue'
+import User from './views/User/User.vue'
+import Roles from './views/Roles/Role.vue'
 
 Vue.use(Router)
 
@@ -20,6 +21,10 @@ export default new Router({
         {
           path: '/user',
           component: User
+        },
+        {
+          path: '/roles',
+          component: Roles
         }
       ]
     },
