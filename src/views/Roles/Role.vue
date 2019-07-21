@@ -8,21 +8,25 @@
     </el-breadcrumb>
     <!-- 表格 -->
     <!-- expand-change:表示当前行展开或者关闭时触发的事件 -->
-    <el-table :data="roleList" stripe style="width: 100%">
+    <el-table ref="roleTable" :data="roleList" stripe style="width: 100%">
       <!-- 给列加上type="expand"可以实现展开行的效果 -->
       <el-table-column type="expand">
         <template v-slot="{row}">
           <el-row class="level1" type="flex" v-for="level1 in row.children" :key="level1.id">
             <!-- 一级权限 -->
             <el-col :span="6">
-              <el-tag closable>{{level1.authName}}</el-tag>
+              <el-tag closable @close="deleteRight(row,level1.id)">{{level1.authName}}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <!-- 二级权限 -->
             <el-col>
               <el-row class="level2" type="flex" v-for="level2 in level1.children" :key="level2.id">
                 <el-col :span="6">
-                  <el-tag type="success" closable>{{level2.authName}}</el-tag>
+                  <el-tag
+                    type="success"
+                    closable
+                    @close="deleteRight(row,level2.id)"
+                  >{{level2.authName}}</el-tag>
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <!-- 三级权限 -->
@@ -31,6 +35,7 @@
                     class="level3"
                     type="warning"
                     closable
+                    @close="deleteRight(row,level3.id)"
                     v-for="level3 in level2.children"
                     :key="level3.id"
                   >{{level3.authName}}</el-tag>
@@ -79,7 +84,7 @@
       ></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="isAssainRightsDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="upDataRoleRighs = false">确 定</el-button>
+        <el-button type="primary" @click="upDataRoleRighs()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -102,6 +107,40 @@ export default {
     };
   },
   methods: {
+    // 删除权限标签
+    async deleteRight(row, id) {
+      let level1Ids = [];
+      let level2Ids = [];
+      let level3Ids = [];
+      row.children.forEach(level1 => {
+        level1Ids.push(level1.id);
+        level1.children.forEach(level2 => {
+          level2Ids.push(level2.id);
+          level2.children.forEach(level3 => {
+            level3Ids.push(level3.id);
+          });
+        });
+      });
+      // 把这三个数组合起来
+      let result = [...level1Ids, ...level2Ids, ...level3Ids];
+      let ids = result.filter(v => v !== id).join();
+      let res = await this.$http({
+        url: `roles/${row.id}/rights`,
+        method: "post",
+        data: {
+          rids: ids
+        }
+      });
+
+      this.$message({
+        type: "success",
+        message: res.data.meta.msg,
+        duration: 1000
+      });
+      this.getRoleList();
+      // 删除之后展开列表
+      this.$refs.roleTable.toggleRowExpansion(row, true);
+    },
     async upDataRoleRighs() {
       // 1.获取tree组件中,所有被勾选节点的id
       let ids = [
