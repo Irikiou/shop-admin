@@ -84,7 +84,7 @@
       ></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="isAssainRightsDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="upDataRoleRighs()">确 定</el-button>
+        <el-button type="primary" @click="upDataRoleRighs">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,44 +109,39 @@ export default {
   methods: {
     // 删除权限标签
     async deleteRight(row, id) {
-      let level1Ids = [];
-      let level2Ids = [];
-      let level3Ids = [];
-      row.children.forEach(level1 => {
-        level1Ids.push(level1.id);
-        level1.children.forEach(level2 => {
-          level2Ids.push(level2.id);
-          level2.children.forEach(level3 => {
-            level3Ids.push(level3.id);
+      // console.log("删除成功");
+      // 调用接口，删除当前角色指定的权限信息
+      // 接口信息
+      //roles/:id/rights/:rightId
+      let res = await this.$http({
+        url: `roles/${row.id}/rights/${id}`,
+        method: "delete"
+      });
+      if (res.data.meta.status == 200) {
+        this.$message({
+          type: "success",
+          message: res.data.meta.msg,
+          duration: 1000
+        });
+        //  利用两个异步回调函数嵌套
+        this.getRoleList(() => {
+          this.$nextTick(() => {
+            //  让表格对应的项展开即可
+            this.$refs.roleTable.toggleRowExpansion(
+              this.roleList.find(v => v.id == row.id),
+              true
+            );
           });
         });
-      });
-      // 把这三个数组合起来
-      let result = [...level1Ids, ...level2Ids, ...level3Ids];
-      let ids = result.filter(v => v !== id).join();
-      let res = await this.$http({
-        url: `roles/${row.id}/rights`,
-        method: "post",
-        data: {
-          rids: ids
-        }
-      });
-
-      this.$message({
-        type: "success",
-        message: res.data.meta.msg,
-        duration: 1000
-      });
-      this.getRoleList();
-      // 删除之后展开列表
-      this.$refs.roleTable.toggleRowExpansion(row, true);
+      }
     },
     async upDataRoleRighs() {
       // 1.获取tree组件中,所有被勾选节点的id
       let ids = [
         ...this.$refs.rightsTree.getCheckedKeys(),
-        ...this.$refs.rightsTree.getHalfCheckedNodes()
+        ...this.$refs.rightsTree.getHalfCheckedKeys()
       ].join(",");
+      console.log(ids);
       // 2.将id拼接成字符串之后，发送ajax请求，修改权限角色
       let res = await this.$http({
         url: `roles/${this.currentEditRoleId}/rights`,
@@ -155,55 +150,68 @@ export default {
           rids: ids
         }
       });
-      // 3.提示用户更新成功
-      this.$message({
-        type: "success",
-        message: res.data.meta.msg,
-        duration: 1000
-      });
+      // console.log(res);
+      if (res.data.meta.status === 200) {
+        // 3.提示用户更新成功
+        this.$message({
+          type: "success",
+          message: res.data.meta.msg,
+          duration: 1000
+        });
+      } else {
+        // 3.提示用户更新成功
+        this.$message({
+          type: "error",
+          message: res.data.meta.msg,
+          duration: 1000
+        });
+      }
       // 4.更新成功之后，重新获取列表数据
       this.getRoleList();
       // 5.关闭模态框
       this.isAssainRightsDialogShow = false;
     },
     async showAssainRightsDialog(row) {
-      // 0.把当前正在编辑的id改成role的id
+      // 0. 把 当前正在编辑的id改成当前role的id
       this.currentEditRoleId = row.id;
-      // 1.打开模态框
+      // console.log("ok");
+      // 1. 打开模态框
       this.isAssainRightsDialogShow = true;
-      // 2.获取所有的权限信息（树结构)
+      // 2. 获取所有的权限信息（树结构）
       let res = await this.$http({
         url: "rights/tree"
       });
-      // console.log(res);
-      // 3.把权限列表绑定给tree组件
+
+      // 3. 把权限列表绑定给了tree组件
       this.rightsList = res.data.data;
-      // 4.让tree组件默认选中当前角色所拥有的的权限信息
-      //  checkedRights：需要把当前角色row中所有的权限的id,组合成一个数组，赋值给 checkedRights
-      // console.log(row);
-      // 获取一级权限的id,组合成数组
-      let level1Ids = [];
-      let level2Ids = [];
+
+      // 4. 需要让tree组件中默认选中当前角色拥有的权限信息
+      // checkedRights ： 我们需要把当前角色row中所有的权限的id，组合成一个数组，赋值给checkedRights
+      // console.log("id", this.currentEditRoleId);
+      // 获取一级权限的id，组合成数组
+      // let level1Ids = [];
+      // let level2Ids = [];
       let level3Ids = [];
       // 获取二级权限的id，组合成数组
       row.children.forEach(level1 => {
-        level1Ids.push(level1.id);
+        // level1Ids.push(level1.id);
         level1.children.forEach(level2 => {
-          level2Ids.push(level2.id);
+          // level2Ids.push(level2.id);
           level2.children.forEach(level3 => {
             level3Ids.push(level3.id);
           });
         });
       });
-      // 把这三个数组合起来
-      this.checkedRights = [...level1Ids, ...level2Ids, ...level3Ids];
+
+      this.checkedRights = [...level3Ids];
     },
-    async getRoleList() {
+    async getRoleList(callback) {
       let res = await this.$http({
         url: "roles"
       });
       // console.log(res);
       this.roleList = res.data.data;
+      callback && callback();
     }
   },
   created() {

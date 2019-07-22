@@ -20,7 +20,7 @@ export default new Router({
       //将user路由当做home路由的children这样一个东西
       children: [
         {
-          path: '/user',
+          path: '/users',
           component: User
         },
         {
