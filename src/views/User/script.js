@@ -89,7 +89,13 @@ export default {
             trigger: 'change'
           }
         ]
-      }
+      },
+      isAssainRoleDialogShow: false,
+      assainRoleData: {
+        username: '',
+        rid: ''
+      },
+      roleList: []
     }
   },
   created() {
@@ -268,6 +274,39 @@ export default {
           })
         }
       } catch (err) {}
+    },
+    // 分配角色
+    async showAssainRoleDialog(row) {
+      // 获取当前用户信息
+      this.isAssainRoleDialogShow = true
+      let res = await this.$http({
+        url: `users/${row.id}`
+      })
+      // console.log(res)
+      this.assainRoleData = res.data.data
+      // 获取角色列表
+      let roleResult = await this.$http({
+        url: 'roles'
+      })
+      console.log(roleResult)
+      this.roleList = roleResult.data.data
+    },
+    // 更新分配角色用户信息
+    async updateRole() {
+      let res = await this.$http({
+        url: `users/${this.assainRoleData.id}/role`,
+        method: 'put',
+        data: {
+          rid: this.assainRoleData.rid
+        }
+      })
+      // console.log(res)
+      this.$message({
+        type: 'success',
+        message: res.data.meta.msg,
+        duration: 1000
+      })
+      this.isAssainRoleDialogShow = false
     }
   }
 }
