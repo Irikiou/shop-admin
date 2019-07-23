@@ -5,6 +5,8 @@ import Home from './views/Home/Home.vue'
 import User from './views/User/User.vue'
 import Roles from './views/Roles/Role.vue'
 import Rights from './views/rights/rights.vue'
+import Goods from './views/Goods/Goods.vue'
+import Gategories from './views/Goods/Gategories.vue'
 
 Vue.use(Router)
 
@@ -30,6 +32,14 @@ export default new Router({
         {
           path: '/rights',
           component: Rights
+        },
+        {
+          path: '/goods',
+          component: Goods
+        },
+        {
+          path: '/categories',
+          component: Gategories
         }
       ]
     },
