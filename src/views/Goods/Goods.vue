@@ -7,7 +7,7 @@
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 添加按钮 -->
-    <el-button type="success" plain>添加商品</el-button>
+    <el-button type="success" plain @click="$router.push('/goods-add')">添加商品</el-button>
     <!-- 表格 -->
     <el-table stripe ref="singleTable" :data="goodsList" style="width: 100%">
       <el-table-column type="index" width="50"></el-table-column>

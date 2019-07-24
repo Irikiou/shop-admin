@@ -29,6 +29,16 @@ axios.interceptors.request.use(
     return Promise.reject(error)
   }
 )
+// 设置axios响应拦截器
+axios.interceptors.response.use(function(response) {
+  // Do something with response data
+  // console.log(response)
+  if (response.data.meta.status == 401) {
+    router.push('/login')
+  }
+
+  return response
+})
 
 //把axios加到vue的原型上
 Vue.prototype.$http = axios
